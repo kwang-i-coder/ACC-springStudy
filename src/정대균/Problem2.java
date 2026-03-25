@@ -34,7 +34,7 @@ public class Problem2 {
         public void setName(String name) { this.name = name; }
     }
 
-    static class Member {
+    static class MemberForm {
         private Long id;
         private String name;
 
@@ -45,17 +45,17 @@ public class Problem2 {
     }
 
     static class MemberService {
-        private final List<Member> members = new ArrayList<>();
+        private final List<MemberForm> members = new ArrayList<>();
         private long nextId = 1;
 
         public void join(String name) {
-            Member m = new Member();
+            MemberForm m = new MemberForm();
             m.setId(nextId++);
             m.setName(name);
             members.add(m);
         }
 
-        public List<Member> findMembers() {
+        public List<MemberForm> findMembers() {
             return members;
         }
     }
@@ -64,15 +64,34 @@ public class Problem2 {
     // TODO: 여기에 MemberController 클래스를 작성하세요
     // ──────────────────────────────────────────────────────────────────────
 
-    // @Controller
-    // static class MemberController {
-    //
-    //     private final MemberService memberService = new MemberService();
-    //
-    //     // TODO 1: GET /members/new
-    //
-    //     // TODO 2: POST /members/new  (공백 이름은 폼으로 돌아가기)
-    //
-    //     // TODO 3: GET /members  (members 목록 + 총 count 도 model 에 담기)
-    // }
+     @Controller
+     static class MemberController {
+
+         private final MemberService memberService = new MemberService();
+
+         // TODO 1: GET /members/new
+         @GetMapping("/members/new")
+         public String form(){
+             return "members/createMemberForm";
+         }
+
+         // TODO 2: POST /members/new  (공백 이름은 폼으로 돌아가기)
+         @PostMapping("/members/new")
+         public String signUp(MemberForm member) {
+             if (!member.getName().isEmpty()) {
+                 memberService.join(member.getName());
+             }
+             return "redirect:/";
+         }
+
+         // TODO 3: GET /members  (members 목록 + 총 count 도 model 에 담기)
+         @GetMapping("/members")
+         public String list(Model model){
+             List<MemberForm> members = memberService.findMembers();
+             int cnt = members.size();
+             model.addAttribute("count", cnt);
+             model.addAttribute("members", members);
+             return "members/memberList";
+         }
+     }
 }
