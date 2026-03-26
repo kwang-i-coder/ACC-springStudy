@@ -64,15 +64,34 @@ public class Problem2 {
     // TODO: 여기에 MemberController 클래스를 작성하세요
     // ──────────────────────────────────────────────────────────────────────
 
-    // @Controller
-    // static class MemberController {
-    //
-    //     private final MemberService memberService = new MemberService();
-    //
-    //     // TODO 1: GET /members/new
-    //
-    //     // TODO 2: POST /members/new  (공백 이름은 폼으로 돌아가기)
-    //
-    //     // TODO 3: GET /members  (members 목록 + 총 count 도 model 에 담기)
-    // }
+    @Controller
+    static class MemberController{
+        private final MemberService memberService = new MemberService();
+
+        @GetMapping(value = "/members/new")
+        public String get1(){
+            return "members/createMemberForm";
+        }
+
+        @PostMapping(value = "/members/new")
+        public String post1(MemberForm memberForm){
+            String name = memberForm.getName();
+            if (name.isEmpty()){
+                return "members/createMemberForm";
+            }
+
+            memberService.join(name);
+
+            return "redirect:/";
+        }
+
+        @GetMapping(value = "/members")
+        public String get2(Model model){
+            List<Member> members = memberService.findMembers();
+            model.addAttribute("members", members);
+            model.addAttribute("memberCount", members.size());
+            return "members/memberList";
+        }
+
+    }
 }
