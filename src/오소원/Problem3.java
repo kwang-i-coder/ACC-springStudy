@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 
 /**
@@ -33,12 +34,16 @@ public class Problem3 {
     // ──────────────────────────────────────────────────────────────────────
 
     // TODO: @Entity 추가
+    @Entity
     static class Member {
 
         // TODO: @Id, @GeneratedValue(strategy = GenerationType.IDENTITY) 추가
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
         // TODO: @Column(name = "username") 추가
+        @Column(name = "username")
         private String name;
 
         public Long getId() { return id; }
@@ -53,9 +58,12 @@ public class Problem3 {
     // ──────────────────────────────────────────────────────────────────────
 
     // TODO: @Aspect, @Component 추가
+    @Aspect
+    @Component
     static class TimeTraceAop {
 
         // TODO: @Around("execution(* hello.hellospring..*(..))") 추가
+        @Around("execution(* hello.hellospring..*(..))")
         public Object execute(ProceedingJoinPoint joinPoint) throws Throwable {
             long start = System.currentTimeMillis();
             System.out.println("START: " + joinPoint.toString());
@@ -65,7 +73,9 @@ public class Problem3 {
                 long finish = System.currentTimeMillis();
                 long timeMs = finish - start;
                 // TODO: "[클래스명.메서드명] 실행 시간: Xms" 형태로 출력하도록 수정하세요.
-                System.out.println("END: " + joinPoint.toString() + " " + timeMs + "ms");
+                String className = joinPoint.getSignature().getDeclaringTypeName();
+                String methodName = joinPoint.getSignature().getName();
+                System.out.println("[: " + className+"."+methodName+"] 실행 시간: "+timeMs+"ms");
             }
         }
     }
