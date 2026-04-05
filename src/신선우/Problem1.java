@@ -66,16 +66,22 @@ public class Problem1 {
     //       (아래 주석을 참고하여 @Configuration, @Bean 을 사용하세요)
     // ──────────────────────────────────────────────────────────────────────
 
-    // @Configuration
-    // static class SpringConfig {
-    //
-    //     @Bean
-    //     public MemberRepository memberRepository() { ... }
-    //
-    //     @Bean
-    //     public MemberService memberService() { ... }
-    //
-    //     @Bean
-    //     public MemberValidator memberValidator() { ... }
-    // }
+     @Configuration
+     static class SpringConfig {
+
+         @Bean
+         public MemberRepository memberRepository() {
+             return new MemoryMemberRepository();
+         }
+
+         @Bean
+         public MemberService memberService() {
+             return new MemberService(memberRepository());
+         }
+
+         @Bean
+         public MemberValidator memberValidator() {
+             return new MemberValidator(memberRepository());
+         }
+     }
 }
