@@ -30,18 +30,34 @@ public class Problem2 {
     static class MemberForm {
         private String name;
 
-        public String getName() { return name; }
-        public void setName(String name) { this.name = name; }
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
     }
 
     static class Member {
         private Long id;
         private String name;
 
-        public Long getId() { return id; }
-        public void setId(Long id) { this.id = id; }
-        public String getName() { return name; }
-        public void setName(String name) { this.name = name; }
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
     }
 
     static class MemberService {
@@ -64,15 +80,36 @@ public class Problem2 {
     // TODO: 여기에 MemberController 클래스를 작성하세요
     // ──────────────────────────────────────────────────────────────────────
 
-    // @Controller
-    // static class MemberController {
-    //
-    //     private final MemberService memberService = new MemberService();
-    //
-    //     // TODO 1: GET /members/new
-    //
-    //     // TODO 2: POST /members/new  (공백 이름은 폼으로 돌아가기)
-    //
-    //     // TODO 3: GET /members  (members 목록 + 총 count 도 model 에 담기)
-    // }
+    @Controller
+    static class MemberController {
+
+        private final MemberService memberService = new MemberService();
+
+        @GetMapping("/members/new")
+        public String createForm() {
+            return "members/createMemberForm";
+        }
+
+        @PostMapping("/members/new")
+        public String create(MemberForm form) {
+
+            if (form.getName() == null || form.getName().trim().isEmpty()) {
+                return "members/createMemberForm";
+            }
+
+            memberService.join(form.getName());
+            return "redirect:/";
+        }
+
+        @GetMapping("/members")
+        public String list(Model model) {
+
+            List<Member> members = memberService.findMembers();
+
+            model.addAttribute("members", members);
+            model.addAttribute("count", members.size());
+
+            return "members/memberList";
+        }
+    }
 }
