@@ -75,4 +75,43 @@ public class Problem2 {
     //
     //     // TODO 3: GET /members  (members 목록 + 총 count 도 model 에 담기)
     // }
+    @Controller
+    static class MemberController{
+        private final MemberService memberService = new MemberService();
+
+        @GetMapping("/members/new") //회원 가입 폼 페이지("members/createMemberForm") 반환
+        public String createForm(){
+           
+
+            return "members/createMemberForm";
+
+        }
+
+
+        @PostMapping("/members/new") //이름이 공백이면 폼으로 돌아가고, 정상이면 회원 저장 후 홈("/")으로 리다이렉트
+        public String create(MemberFrom form){
+            
+            
+            if(form.getName() == ""){
+                return "members/createMemberForm";
+            }
+
+            Member member = new Member();
+            member.setName(form.getName());
+
+            memberService.join(member);
+            
+            return "redirect:/";
+
+
+        }
+
+        @GetMapping("/members") //전체 회원 목록과 총 인원 수를 Model에 담아 "members/memberList" 반환
+        public String list(Model model){
+            List<Member> members = memberService.findMembers();
+            model.addAttribute("members", members);
+            model.addAttribute("count", members.size());
+            return "members/memberList";
+        }
+    }
 }
