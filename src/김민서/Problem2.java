@@ -22,6 +22,37 @@ import java.util.List;
  */
 // TODO: 아래 MemberController 클래스를 완성하세요.
 public class Problem2 {
+    @Controller
+    static class MemberController {
+
+        private final MemberService memberService = new MemberService();
+
+        @GetMapping("/members/new")
+        public String createForm() {
+            return "members/createMemberForm";
+        }
+
+        @PostMapping("/members/new")
+        public String create(MemberForm form) {
+            // 이름이 공백이면 폼으로 돌아가고, 정상이면 회원 저장 후 홈("/")으로 리다이렉트
+            if (form.getName() == null || form.getName().trim().isEmpty()) {
+                return "members/createMemberForm";
+            }
+            memberService.join(form.getName());
+            return "redirect:/";
+        }
+
+        @GetMapping("/members")
+        public String list(Model model) {
+            List<Member> members = memberService.findMembers();
+
+            //Model에 회원 목록과 전체 인원수 담기
+            model.addAttribute("members", members);
+            model.addAttribute("count", members.size());
+
+            return "members/memberList";
+        }
+    }
 
     // ──────────────────────────────────────────────────────────────────────
     // 아래 코드는 수정하지 마세요 (지원 클래스 / Supporting classes)
