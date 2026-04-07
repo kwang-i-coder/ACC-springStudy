@@ -13,6 +13,26 @@ import org.springframework.context.annotation.Configuration;
 // TODO: 아래 클래스에 적절한 애노테이션을 추가하고, 빈 등록 메서드를 작성하세요.
 public class Problem1 {
 
+    @Configuration 
+    static class SpringConfig {
+
+        @Bean // 스프링 컨테이너에 요청
+        public MemberRepository memberRepository() {
+            // 실제 구현체인 MemoryMemberRepository를 반환
+            return new MemoryMemberRepository();
+        }
+
+        @Bean
+        public MemberService memberService() {
+            return new MemberService(memberRepository());
+        }
+
+        @Bean
+        public MemberValidator memberValidator() {
+            return new MemberValidator(memberRepository());
+        }
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // 아래 코드는 수정하지 마세요 (지원 클래스 / Supporting classes)
     // ──────────────────────────────────────────────────────────────────────
