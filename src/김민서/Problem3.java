@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
  * 힌트 B: ProceedingJoinPoint.proceed() 로 실제 메서드를 실행합니다.
  *         System.currentTimeMillis() 로 시작/종료 시간을 측정하세요.
  */
-public class Problem3 {
+    public class Problem3 {
 
     // ──────────────────────────────────────────────────────────────────────
     // Part A: JPA 엔티티 매핑
@@ -35,6 +35,7 @@ public class Problem3 {
     // TODO: @Entity 추가
     static class Member {
 
+        
         // TODO: @Id, @GeneratedValue(strategy = GenerationType.IDENTITY) 추가
         private Long id;
 
@@ -46,6 +47,7 @@ public class Problem3 {
         public String getName() { return name; }
         public void setName(String name) { this.name = name; }
     }
+}
 
     // ──────────────────────────────────────────────────────────────────────
     // Part B: AOP 실행 시간 측정
@@ -53,9 +55,11 @@ public class Problem3 {
     // ──────────────────────────────────────────────────────────────────────
 
     // TODO: @Aspect, @Component 추가
+    @Aspect 
+    @Component 
     static class TimeTraceAop {
 
-        // TODO: @Around("execution(* hello.hellospring..*(..))") 추가
+        @Around("execution(* hello.hellospring..*(..))")
         public Object execute(ProceedingJoinPoint joinPoint) throws Throwable {
             long start = System.currentTimeMillis();
             System.out.println("START: " + joinPoint.toString());
@@ -64,9 +68,11 @@ public class Problem3 {
             } finally {
                 long finish = System.currentTimeMillis();
                 long timeMs = finish - start;
-                // TODO: "[클래스명.메서드명] 실행 시간: Xms" 형태로 출력하도록 수정하세요.
-                System.out.println("END: " + joinPoint.toString() + " " + timeMs + "ms");
+                
+                String className = joinPoint.getTarget().getClass().getSimpleName();
+                String methodName = joinPoint.getSignature().getName();
+
+                System.out.println("[" + className + "." + methodName + "] 실행 시간: " + timeMs + "ms");
             }
         }
     }
-}
