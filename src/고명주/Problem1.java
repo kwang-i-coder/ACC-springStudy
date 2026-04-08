@@ -1,3 +1,4 @@
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -78,4 +79,24 @@ public class Problem1 {
     //     @Bean
     //     public MemberValidator memberValidator() { ... }
     // }
+
+    @Configuration
+    static class SpringConfig{
+        @Bean
+        public MemberRepository memberRepository(){
+            return new MemoryMemberRepository();
+        }
+
+        @Bean
+        public MemberService memberService(MemberRepository memberRepository) {
+            return new MemberService(memberRepository);
+        }
+
+        @Bean
+        public MemberValidator memberValidator(MemberRepository memberRepository) {
+            return new MemberValidator(memberRepository);
+        }
+
+
+    }
 }
