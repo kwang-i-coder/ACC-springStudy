@@ -22,6 +22,7 @@ import java.util.Map;
  * - 기획자가 할인 정책을 정액(1000원)에서 정률(10%)로 변경해달라고 합니다.
  * - AppConfig 의 discountPolicy() 반환값을 RateDiscountPolicy 로 변경해 보세요.
  * - [질문]: 정책을 바꿀 때 OrderServiceImpl 코드를 단 한 줄이라도 수정했나요?
+ * NO!
  */
 public class Problem2 {
 
@@ -131,8 +132,13 @@ public class Problem2 {
     static class OrderServiceImpl implements OrderService {
 
         // TODO: 아래 DIP 위반 코드를 지우고, 생성자 주입 방식으로 바꾸세요.
-        private final MemberRepository memberRepository = new MemoryMemberRepository();
-        private final DiscountPolicy discountPolicy = new FixDiscountPolicy();
+        private final MemberRepository memberRepository;
+        private final DiscountPolicy discountPolicy;
+
+        public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
+            this.memberRepository = memberRepository;
+            this.discountPolicy = discountPolicy;
+        }
 
         @Override
         public Order createOrder(Long memberId, String itemName, int itemPrice) {
@@ -146,9 +152,15 @@ public class Problem2 {
     // Part B & C: AppConfig 클래스 작성 및 정책 변경
     // ──────────────────────────────────────────────────────────────────────
 
-    // static class AppConfig {
-    //     public MemberRepository memberRepository() { ... }
-    //     public DiscountPolicy discountPolicy() { ... } // Part C 에서 여기만 RateDiscountPolicy 로 바꿔보세요!
-    //     public OrderService orderService() { ... }
-    // }
+     static class AppConfig {
+         public MemberRepository memberRepository() {
+             return new MemoryMemberRepository();
+         }
+         public DiscountPolicy discountPolicy() {
+             return new RateDiscountPolicy();
+         } // Part C 에서 여기만 RateDiscountPolicy 로 바꿔보세요!
+         public OrderService orderService() {
+             return new OrderServiceImpl(memberRepository(), discountPolicy());
+         }
+     }
 }
