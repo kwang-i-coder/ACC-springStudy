@@ -21,7 +21,7 @@ import java.util.Map;
  * Part C: 🌟 OCP (개방-폐쇄 원칙) 체험하기 🌟
  * - 기획자가 할인 정책을 정액(1000원)에서 정률(10%)로 변경해달라고 합니다.
  * - AppConfig 의 discountPolicy() 반환값을 RateDiscountPolicy 로 변경해 보세요.
- * - [질문]: 정책을 바꿀 때 OrderServiceImpl 코드를 단 한 줄이라도 수정했나요?
+ * - [질문]: 정책을 바꿀 때 OrderServiceImpl 코드를 단 한 줄이라도 수정했나요? 아니요~
  */
 public class Problem2 {
 
@@ -134,7 +134,7 @@ public class Problem2 {
         private final MemberRepository memberRepository;
         private final DiscountPolicy discountPolicy;
 
-        OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
+        OrderServiceImpl (MemberRepository memberRepository, DiscountPolicy discountPolicy) {
             this.memberRepository = memberRepository;
             this.discountPolicy = discountPolicy;
         }

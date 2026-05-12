@@ -57,10 +57,40 @@ public class Problem1 {
     // ──────────────────────────────────────────────────────────────────────
 
     // TODO 1: MemberRepository 인터페이스
+    interface MemberRepository {
+        void save(Member member);
+        Member findById(Long memberId);
+    }
 
     // TODO 2: MemoryMemberRepository 클래스
+    static class MemoryMemberRepository implements MemberRepository {
+        HashMap<Long, Member> members = new HashMap<>();
+
+        @Override
+        public void save(Member member) {
+            members.put(member.getId(), member);
+        }
+        @Override
+        public Member findById(Long memberId) {
+            return members.get(memberId);
+        }
+    }
 
     // TODO 3: MemberServiceImpl 클래스
+    static class MemberServiceImpl implements MemberService {
+        MemberRepository repository;
+
+        public MemberServiceImpl(MemberRepository repository) {
+            this.repository = repository;
+        }
+
+        public void join(Member member) {
+            repository.save(member);
+        }
+        public Member findMember(Long memberId) {
+            return repository.findById(memberId);
+        }
+    }
 
     // ──────────────────────────────────────────────────────────────────────
     // 3. 실행 및 검증 (TODO 4)
@@ -70,15 +100,15 @@ public class Problem1 {
         // 아래 주석을 해제하고 실행 결과가 맞게 나오는지 확인해 보세요!
         // 회원 이름은 제가 임의로 해둔거로 수정 해주셔야 합니다!
 
-        // MemberRepository memberRepository = new MemoryMemberRepository();
-        // MemberService memberService = new MemberServiceImpl(memberRepository);
-        //
-        // Member member = new Member(1L, "SpringBoodong", Grade.VIP);
-        // memberService.join(member);
-        //
-        // Member findMember = memberService.findMember(1L);
-        // System.out.println("가입한 멤버 이름: " + findMember.getName());
-        // System.out.println("조회된 멤버 이름: " + member.getName());
-        // System.out.println("이름 일치 여부: " + member.getName().equals(findMember.getName()));
+         MemberRepository memberRepository = new MemoryMemberRepository();
+         MemberService memberService = new MemberServiceImpl(memberRepository);
+
+         Member member = new Member(1L, "SpringBoodong", Grade.VIP);
+         memberService.join(member);
+
+         Member findMember = memberService.findMember(1L);
+         System.out.println("가입한 멤버 이름: " + findMember.getName());
+         System.out.println("조회된 멤버 이름: " + member.getName());
+         System.out.println("이름 일치 여부: " + member.getName().equals(findMember.getName()));
     }
 }
