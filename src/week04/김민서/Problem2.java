@@ -171,9 +171,4 @@ public class Problem2 {
         */
     }
 }
-    //     public MemberRepository memberRepository() { ... }
-    //     public DiscountPolicy discountPolicy() { ... } // Part C 에서 여기만 RateDiscountPolicy 로 바꿔보세요!
-    //     public OrderService orderService() { ... }
-    // }
-}
 
