@@ -5,23 +5,6 @@ import java.util.Map;
 
 /**
  * 문제 2: AppConfig 와 관심사의 분리 (OCP, DIP)
- *
- * 현재 OrderServiceImpl 은 인터페이스(DiscountPolicy)뿐 아니라,
- * 구체 클래스(FixDiscountPolicy)에도 직접 의존하는 'DIP 위반' 상태입니다.
- *
- * Part A: OrderServiceImpl 리팩터링
- * - new FixDiscountPolicy() 부분을 제거하세요.
- * - MemberRepository 와 DiscountPolicy 를 모두 생성자로 주입받도록 변경하세요.
- *
- * Part B: AppConfig (공연 기획자) 클래스 작성
- * - memberRepository() : MemoryMemberRepository 반환
- * - discountPolicy()   : FixDiscountPolicy 반환
- * - orderService()     : OrderServiceImpl 을 생성하여 반환 (의존성 주입)
- *
- * Part C: 🌟 OCP (개방-폐쇄 원칙) 체험하기 🌟
- * - 기획자가 할인 정책을 정액(1000원)에서 정률(10%)로 변경해달라고 합니다.
- * - AppConfig 의 discountPolicy() 반환값을 RateDiscountPolicy 로 변경해 보세요.
- * - [질문]: 정책을 바꿀 때 OrderServiceImpl 코드를 단 한 줄이라도 수정했나요?
  */
 public class Problem2 {
 
@@ -119,20 +102,21 @@ public class Problem2 {
         Order createOrder(Long memberId, String itemName, int itemPrice);
     }
 
-    interface MemberService {
-        void join(Member member);
-        Member findMember(Long memberId);
-    }
-
     // ──────────────────────────────────────────────────────────────────────
     // Part A: OrderServiceImpl 생성자 주입 방식으로 리팩터링
     // ──────────────────────────────────────────────────────────────────────
 
     static class OrderServiceImpl implements OrderService {
 
-        // TODO: 아래 DIP 위반 코드를 지우고, 생성자 주입 방식으로 바꾸세요.
-        private final MemberRepository memberRepository = new MemoryMemberRepository();
-        private final DiscountPolicy discountPolicy = new FixDiscountPolicy();
+
+        private final MemberRepository memberRepository;
+        private final DiscountPolicy discountPolicy;
+
+        // 생성자를 통해 외부(AppConfig)에서 주입받습니다.
+        public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
+            this.memberRepository = memberRepository;
+            this.discountPolicy = discountPolicy;
+        }
 
         @Override
         public Order createOrder(Long memberId, String itemName, int itemPrice) {
@@ -146,9 +130,45 @@ public class Problem2 {
     // Part B & C: AppConfig 클래스 작성 및 정책 변경
     // ──────────────────────────────────────────────────────────────────────
 
-    // static class AppConfig {
-    //     public MemberRepository memberRepository() { ... }
-    //     public DiscountPolicy discountPolicy() { ... } // Part C 에서 여기만 RateDiscountPolicy 로 바꿔보세요!
-    //     public OrderService orderService() { ... }
-    // }
+    static class AppConfig {
+
+        public MemberRepository memberRepository() {
+            return new MemoryMemberRepository();
+        }
+
+        public DiscountPolicy discountPolicy() {
+
+            return new RateDiscountPolicy();
+        }
+
+        public OrderService orderService() {
+            // 인젝션을 통해 관계를 맺어줍니다
+            return new OrderServiceImpl(memberRepository(), discountPolicy());
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // 검증을 위한 메인 메서드
+    // ──────────────────────────────────────────────────────────────────────
+    public static void main(String[] args) {
+        AppConfig appConfig = new AppConfig();
+
+        // 데이터 준비
+        MemberRepository memberRepository = appConfig.memberRepository();
+        Member member = new Member(1L, "민서", Grade.VIP);
+        memberRepository.save(member);
+
+        // 서비스 사용
+        OrderService orderService = appConfig.orderService();
+        Order order = orderService.createOrder(1L, "맥북", 2000000);
+
+        System.out.println(order);
+        System.out.println("최종 결제 금액: " + order.calculatePrice());
+
+        /* [Part C 답변]
+           질문: 정책을 바꿀 때 OrderServiceImpl 코드를 단 한 줄이라도 수정했나요?
+           정답:  AppConfig(구성 영역)만 수정했습니다.
+        */
+    }
 }
+
