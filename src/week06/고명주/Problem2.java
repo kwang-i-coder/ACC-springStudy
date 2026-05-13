@@ -76,6 +76,7 @@ public class Problem2 {
         // 빈 초기화 완료 직후 이 메서드가 자동으로 호출되도록
         // @PostConstruct 애노테이션을 붙이세요.
         // ──────────────────────────────────────────────────────────────────
+        @PostConstruct
         public void init() {
             System.out.println("[init] CafeConnection 초기화");
             connect();
@@ -87,6 +88,8 @@ public class Problem2 {
         // 빈 소멸 직전에 이 메서드가 자동으로 호출되도록
         // @PreDestroy 애노테이션을 붙이세요.
         // ──────────────────────────────────────────────────────────────────
+        
+        @PreDestroy
         public void close() {
             System.out.println("[close] CafeConnection 종료");
             disconnect();
@@ -110,6 +113,7 @@ public class Problem2 {
     // @Scope("prototype") 을 추가하세요.
     // ──────────────────────────────────────────────────────────────────────
     @Component
+    @Scope("prototype")
     static class OrderCounter {
         private int count = 0;
 
@@ -121,6 +125,8 @@ public class Problem2 {
             System.out.println("[OrderCounter] 새 카운터 생성: " + this);
         }
     }
+
+
 
     /**
      * 주문 처리 서비스 (싱글톤).
@@ -142,14 +148,22 @@ public class Problem2 {
         // ──────────────────────────────────────────────────────────────────
 
         // TODO ① 필드 선언: ObjectProvider<OrderCounter> 타입의 counterProvider를 선언하세요.
+        private final ObjectProvider<OrderCounter> counterProvider;
 
         // TODO ② 생성자: @Autowired를 붙인 생성자로 counterProvider를 주입받으세요.
+        @Autowired
+        public CafeOrderService(ObjectProvider<OrderCounter> counterProvider){
+            this.counterProvider = counterProvider;
+        }
+
 
         public int processOrder(String itemName) {
             System.out.println("[주문 처리] " + itemName);
             // TODO ③ 구현: counterProvider.getObject()로 새 OrderCounter를 꺼내
             //              increment() 호출 후 getCount()를 반환하세요.
-            return -1; // TODO 완성 후 이 줄을 지우세요.
+            OrderCounter orderCounter = counterProvider.getObject();
+            orderCounter.increment();
+            return orderCounter.getCount();
         }
     }
 
@@ -164,23 +178,22 @@ public class Problem2 {
     // main: TODO를 모두 완성한 후 아래 주석을 해제하고 실행해보세요.
     // ──────────────────────────────────────────────────────────────────────
     public static void main(String[] args) {
-        // AnnotationConfigApplicationContext ac =
-        //         new AnnotationConfigApplicationContext(CafeAppConfig.class);
+        AnnotationConfigApplicationContext ac =new AnnotationConfigApplicationContext(CafeAppConfig.class);
         //
         // // ── Part A 확인 ─────────────────────────────────────────────────
-        // CafeConnection conn = ac.getBean(CafeConnection.class);
-        // System.out.println("연결 상태: " + conn.isConnected()); // true 여야 함
-        // conn.sendOrder("아메리카노");
-        //
+        CafeConnection conn = ac.getBean(CafeConnection.class);
+        System.out.println("연결 상태: " + conn.isConnected()); // true 여야 함
+        conn.sendOrder("아메리카노");
+        
         // // ── Part B 확인 ─────────────────────────────────────────────────
-        // CafeOrderService orderService = ac.getBean(CafeOrderService.class);
+        CafeOrderService orderService = ac.getBean(CafeOrderService.class);
         //
-        // int count1 = orderService.processOrder("카페라떼");
-        // int count2 = orderService.processOrder("에스프레소");
+        int count1 = orderService.processOrder("카페라떼");
+        int count2 = orderService.processOrder("에스프레소");
         //
-        // System.out.println("주문 1 카운트: " + count1); // 1 이어야 함
-        // System.out.println("주문 2 카운트: " + count2); // 1 이어야 함 (새 프로토타입!)
+        System.out.println("주문 1 카운트: " + count1); // 1 이어야 함
+        System.out.println("주문 2 카운트: " + count2); // 1 이어야 함 (새 프로토타입!)
         //
-        // ac.close(); // @PreDestroy 호출 확인
+        ac.close(); // @PreDestroy 호출 확인
     }
 }
