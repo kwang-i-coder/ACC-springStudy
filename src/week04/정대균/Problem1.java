@@ -10,7 +10,7 @@ import java.util.Map;
  * 유연한 설계를 위해 인터페이스를 먼저 만들고, 임시로 메모리 저장소를 사용해 봅시다.
  *
  * TODO 1. MemberRepository 인터페이스 작성
- * - void save(Member member)
+// * - void save(Member member)
  * - Member findById(Long memberId)
  *
  * TODO 2. MemoryMemberRepository (MemberRepository 구현체) 작성
