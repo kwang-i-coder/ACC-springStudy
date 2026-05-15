@@ -158,6 +158,7 @@ public class Problem2 {
             // TODO ③ 구현: counterProvider.getObject()로 새 OrderCounter를 꺼내
             //              increment() 호출 후 getCount()를 반환하세요.
             OrderCounter counter = counterProvider.getObject();
+            counter.increment();
             return counter.getCount();
         }
     }
