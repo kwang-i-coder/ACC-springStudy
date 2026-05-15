@@ -98,23 +98,6 @@ public class Problem1 {
 
     // ──────────────────────────────────────────────────────────────────────
     // 3. 실행 및 검증 (TODO 4)
-    static class MemberServiceImpl implements MemberService {
-        private final MemberRepository memberRepository;
-
-        MemberServiceImpl (MemberRepository memberRepository) {
-            this.memberRepository = memberRepository;
-        }
-
-        @Override
-        public void join(Member member) {
-            memberRepository.save(member);
-        }
-
-        @Override
-        public Member findMember(Long memberId) {
-            return memberRepository.findById(memberId);
-        }
-    }
     // ──────────────────────────────────────────────────────────────────────
 
     public static void main(String[] args) {
