@@ -114,12 +114,13 @@ public class Problem1 {
         @Override
         public void register(Book book) {
             // TODO ④: bookRepository.save(book) 호출
+            bookRepository.save(book);
         }
 
         @Override
         public Book findBook(Long id) {
             // TODO ④: return bookRepository.findById(id)
-            return null;
+            return bookRepository.findById(id);
         }
     }
 
