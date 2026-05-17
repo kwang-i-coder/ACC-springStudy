@@ -73,6 +73,7 @@ public class Problem1 {
     // MemoryBookRepository에 @Component를 붙여서
     // 컴포넌트 스캔 시 스프링이 자동으로 빈으로 등록하게 하세요.
     // ──────────────────────────────────────────────────────────────────────
+    @Component
     static class MemoryBookRepository implements BookRepository {
         private final Map<Long, Book> store = new HashMap<>();
 
@@ -99,21 +100,28 @@ public class Problem1 {
     // 힌트: 생성자가 딱 1개면 @Autowired를 생략해도 자동 주입됩니다.
     //       하지만 이번엔 명시적으로 붙여봅시다!
     // ──────────────────────────────────────────────────────────────────────
+    @Component
     static class BookServiceImpl implements BookService {
 
         // TODO ②: private final BookRepository bookRepository;
+        private final BookRepository bookRepository;
 
         // TODO ③: @Autowired 생성자 작성
+        @Autowired
+        BookServiceImpl(BookRepository bookRepository) {
+            this.bookRepository = bookRepository;
+        }
 
         @Override
         public void register(Book book) {
             // TODO ④: bookRepository.save(book) 호출
+            bookRepository.save(book);
         }
 
         @Override
         public Book findBook(Long id) {
             // TODO ④: return bookRepository.findById(id)
-            return null;
+            return bookRepository.findById(id);
         }
     }
 
@@ -127,6 +135,8 @@ public class Problem1 {
     // 참고: @Bean 메서드는 작성하지 않아도 됩니다.
     //       @ComponentScan이 @Component 클래스들을 알아서 찾아 등록해줍니다.
     // ──────────────────────────────────────────────────────────────────────
+    @Configuration
+    @ComponentScan
     static class AutoAppConfig {
         // 비어 있어도 괜찮습니다!
     }
