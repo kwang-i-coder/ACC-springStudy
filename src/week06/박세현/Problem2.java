@@ -76,6 +76,7 @@ public class Problem2 {
         // 빈 초기화 완료 직후 이 메서드가 자동으로 호출되도록
         // @PostConstruct 애노테이션을 붙이세요.
         // ──────────────────────────────────────────────────────────────────
+        @PostConstruct
         public void init() {
             System.out.println("[init] CafeConnection 초기화");
             connect();
@@ -87,6 +88,7 @@ public class Problem2 {
         // 빈 소멸 직전에 이 메서드가 자동으로 호출되도록
         // @PreDestroy 애노테이션을 붙이세요.
         // ──────────────────────────────────────────────────────────────────
+        @PreDestroy
         public void close() {
             System.out.println("[close] CafeConnection 종료");
             disconnect();
@@ -110,6 +112,7 @@ public class Problem2 {
     // @Scope("prototype") 을 추가하세요.
     // ──────────────────────────────────────────────────────────────────────
     @Component
+    @Scope("prototype")
     static class OrderCounter {
         private int count = 0;
 
@@ -143,13 +146,24 @@ public class Problem2 {
 
         // TODO ① 필드 선언: ObjectProvider<OrderCounter> 타입의 counterProvider를 선언하세요.
 
+        private final ObjectProvider<OrderCounter> counterProvider;
+
         // TODO ② 생성자: @Autowired를 붙인 생성자로 counterProvider를 주입받으세요.
+
+        @Autowired
+        public CafeOrderService(ObjectProvider<OrderCounter> counterProvider) {
+            this.counterProvider = counterProvider;
+        }
 
         public int processOrder(String itemName) {
             System.out.println("[주문 처리] " + itemName);
             // TODO ③ 구현: counterProvider.getObject()로 새 OrderCounter를 꺼내
             //              increment() 호출 후 getCount()를 반환하세요.
-            return -1; // TODO 완성 후 이 줄을 지우세요.
+            // TODO 완성 후 이 줄을 지우세요.
+
+            OrderCounter counter = counterProvider.getObject();
+            counter.increment();
+            return counter.getCount();
         }
     }
 
